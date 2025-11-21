@@ -5,7 +5,7 @@ class ReportsManager {
         return `
             <div class="p-4">
                 <div class="mb-4">
-                    <button id="generateReportBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition">
+                    <button id="generateReportBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition btn-primary">
                         Generar Nuevo Reporte
                     </button>
                 </div>
@@ -74,6 +74,18 @@ class ReportsManager {
         if (!reportNode || !reportDescription) {
             alert('Por favor, completa todos los campos obligatorios.');
             return;
+        }
+        // Prevent duplicate reports for the same node that are not completed
+        try {
+            const existingLocal = (appState.reports || []).some(r => r.nodeId === reportNode && r.status !== 'completado');
+            const pending = StorageManager.getPendingReports() || [];
+            const existingPending = pending.some(r => r.nodeId === reportNode);
+            if (existingLocal || existingPending) {
+                alert('Ya existe un reporte pendiente para este nodo. No se puede duplicar.');
+                return;
+            }
+        } catch (e) {
+            console.warn('ReportsManager: error verificando reportes duplicados', e);
         }
         
         const node = (appState.nodes || []).map(n => (typeof NodeUtils !== 'undefined' ? NodeUtils.toAppNode(n) : n)).find(n => n && n.id === reportNode);

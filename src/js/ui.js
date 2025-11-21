@@ -15,6 +15,23 @@ class UIManager {
                     btnNodos.classList.remove('bg-red-600', 'text-white');
                     btnNodos.classList.add('text-gray-700', 'hover:bg-gray-100');
                 }
+                // En móvil: si el panel derecho ya está abierto y la sección activa es la misma,
+                // cerrar el panel; en caso contrario, abrirlo. Esto evita duplicar su apertura
+                try {
+                    if (window.innerWidth <= 768) {
+                        const sidebarNodes = document.getElementById('sidebar-nodes');
+                        const overlay = document.getElementById('overlay');
+                        if (sidebarNodes && sidebarNodes.classList.contains('open') && appState && appState.activeSection === 'Reportes') {
+                            sidebarNodes.classList.remove('open');
+                            if (overlay) overlay.classList.remove('active');
+                            return;
+                        }
+                        if (sidebarNodes) sidebarNodes.classList.add('open');
+                        if (overlay) overlay.classList.add('active');
+                    }
+                } catch (e) {
+                    console.debug('UIManager: no mobile sidebar to toggle', e);
+                }
             });
         } else {
             console.warn('UIManager: #btnReportes no encontrado al adjuntar listeners');
@@ -28,6 +45,23 @@ class UIManager {
                 if (btnReportes) {
                     btnReportes.classList.remove('bg-red-600', 'text-white');
                     btnReportes.classList.add('text-gray-700', 'hover:bg-gray-100');
+                }
+                // En móvil: si el panel derecho ya está abierto y la sección activa es la misma,
+                // cerrar el panel; en caso contrario, abrirlo.
+                try {
+                    if (window.innerWidth <= 768) {
+                        const sidebarNodes = document.getElementById('sidebar-nodes');
+                        const overlay = document.getElementById('overlay');
+                        if (sidebarNodes && sidebarNodes.classList.contains('open') && appState && appState.activeSection === 'Nodos') {
+                            sidebarNodes.classList.remove('open');
+                            if (overlay) overlay.classList.remove('active');
+                            return;
+                        }
+                        if (sidebarNodes) sidebarNodes.classList.add('open');
+                        if (overlay) overlay.classList.add('active');
+                    }
+                } catch (e) {
+                    console.debug('UIManager: no mobile sidebar to toggle', e);
                 }
             });
         } else {

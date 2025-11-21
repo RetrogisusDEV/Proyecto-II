@@ -4,13 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Acceso / Registro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/vendor/tailwind-cdn.js"></script>
+  <link rel="stylesheet" href="styles/components.css" />
   <link rel="stylesheet" href="styles/main.css" />
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+<body class="theme-blue bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
   <main class="w-full max-w-md">
     <section class="bg-white rounded-2xl shadow-xl p-8">
-      <div class="text-center mb-2">
+      <div class="text-center mb-2 logo-badge">
         <img src="images/logo.png" alt="Logo" class="mx-auto h-12 mb-2" />
       </div>
       <p class="text-gray-600 text-center mb-6">Gestiona tu cuenta de forma segura</p>
@@ -23,17 +24,17 @@
         <div>
           <label for="login-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre de usuario</label>
           <input id="login-name" name="name" type="text" required placeholder="Tu usuario" autocomplete="username"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
           <input id="login-password" name="password" type="password" required placeholder="Contraseña" autocomplete="current-password"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <button id="btn-login" type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 btn-primary">
           Entrar
         </button>
         
@@ -49,41 +50,41 @@
         <div>
           <label for="reg-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre de usuario</label>
           <input id="reg-name" name="name" type="text" required placeholder="Tu usuario" autocomplete="username"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="reg-firstname" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
           <input id="reg-firstname" name="firstName" type="text" required placeholder="Tu nombre"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="reg-lastname" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
           <input id="reg-lastname" name="lastName" type="text" required placeholder="Tu apellido"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="reg-employee-id" class="block text-sm font-medium text-gray-700 mb-1">ID de trabajador</label>
           <input id="reg-employee-id" name="employeeId" type="text" required placeholder="Tu ID de trabajador"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
           <input id="reg-password" name="password" type="password" required placeholder="Contraseña" autocomplete="new-password"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <div>
           <label for="reg-password-confirm" class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
           <input id="reg-password-confirm" name="passwordConfirm" type="password" required placeholder="Repite la contraseña" autocomplete="new-password"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition form-control">
         </div>
 
         <button id="btn-register" type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 btn-primary">
           Registrarse
         </button>
         
