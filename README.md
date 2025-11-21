@@ -1,6 +1,11 @@
-# StarNet : Sistema de Gestión (Proyecto-II)
+
+<h1 align="center">StarNet : Sistema de Gestión (Proyecto-II)</h1>
+
+<div align="center"> 
 
 ![starnet](./src/images/logo.png)
+
+</div>
 
 ---
 
@@ -10,7 +15,11 @@ Pequeña aplicación cliente para gestión de nodos y generación de reportes co
 - Autenticación simple (registro/inicio de sesión) y persistencia local, con integración opcional a Firebase Realtime Database para sincronizar usuarios y datos.
 - Generación y envío de reportes, y visualización de nodos geolocalizados.
 
+<div align="center"> 
+  
 ![uptll](./src/images/uptlllogo.jpg)
+
+</div>
 
 ---
 
@@ -23,7 +32,7 @@ Uso y licencia
 --------------
 Este repositorio contiene software destinado a uso privado y corporativo. Contiene código con patente y/o restricciones de distribución: no reproduzca ni distribuya sin la debida autorización del propietario. Consulte los archivos `LICENSE` y `NOTICE` incluidos para más detalles legales.
 
-Compilación / Empaquetado (Windows)
+Empaquetado (Windows)
 ----------------------------------
 Para crear una versión compilada en Windows (empaquetado con PyInstaller u otro script incluido), use el `build.bat` incluido en la raíz del proyecto:
 
@@ -36,4 +45,4 @@ Para crear una versión compilada en Windows (empaquetado con PyInstaller u otro
 
 Contacto
 -------
-Para consultas sobre licencia o despliegue contacte al propietario del repositorio.
+Para consultas sobre licencia o despliegue contacteme
