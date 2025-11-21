@@ -1,4 +1,6 @@
 name: Build Windows App
+permissions:
+  contents: read
 on:
   push:
     paths:
