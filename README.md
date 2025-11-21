@@ -10,6 +10,15 @@ Pequeña aplicación cliente para gestión de nodos y generación de reportes co
 - Autenticación simple (registro/inicio de sesión) y persistencia local, con integración opcional a Firebase Realtime Database para sincronizar usuarios y datos.
 - Generación y envío de reportes, y visualización de nodos geolocalizados.
 
+![uptll](./src/images/uptlllogo.jpg)
+
+---
+
+Proyecto universitario que forma parte del PNL de informatica trayecto 2 - T01, bajo revision de:
+- Tutor Academico : Mondarae
+- Asistente : Itriago
+- Coordinador : Ladera
+
 Uso y licencia
 --------------
 Este repositorio contiene software destinado a uso privado y corporativo. Contiene código con patente y/o restricciones de distribución: no reproduzca ni distribuya sin la debida autorización del propietario. Consulte los archivos `LICENSE` y `NOTICE` incluidos para más detalles legales.
