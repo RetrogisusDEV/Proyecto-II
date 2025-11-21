@@ -124,19 +124,36 @@ class FirebaseManager {
             const data = snapshot.val();
             if (!data) return null;
 
-            // If identifier matches a key exactly (employeeId), return that
+            // If identifier matches a key exactly (employeeId), return that (normalized)
+            const normalize = (u) => {
+                if (!u) return null;
+                return {
+                    name: u.name || u.username || '',
+                    firstName: u.firstName || u.firstname || u.givenName || '',
+                    lastName: u.lastName || u.lastname || u.last || u.surname || '',
+                    employeeId: u.employeeId || u.employee || u.empId || null,
+                    // accept password or passwordHash fields
+                    password: u.password || u.passwordHash || '',
+                    original: u
+                };
+            };
+
             if (data[identifier]) {
-                return data[identifier];
+                return normalize(data[identifier]);
             }
 
-            // Otherwise search by name case-insensitive
+            // Otherwise search by name case-insensitive across known fields
             const idLower = identifier.toLowerCase();
             for (const k of Object.keys(data)) {
                 const u = data[k];
-                if (u && u.name && u.name.toLowerCase() === idLower) {
-                    return u;
+                if (!u) continue;
+                const candidateName = (u.name || u.username || '').toLowerCase();
+                const candidateEmp = (u.employeeId || u.employee || '').toString();
+                if (candidateName === idLower || candidateEmp === identifier) {
+                    return normalize(u);
                 }
             }
+
             return null;
         } catch (err) {
             console.error('FirebaseManager: error fetching user by identifier', err);
@@ -145,14 +162,21 @@ class FirebaseManager {
     }
 
     static uploadReport(reportData) {
-        if (!this.database) {
+        if (!this.ensureInitialized()) {
             console.warn('Firebase no disponible para subir reporte');
             return false;
         }
 
-        // Implementar subida de reportes a Firebase
-        console.log('Subiendo reporte a Firebase:', reportData);
-        return true;
+        try {
+            const id = reportData.id || Date.now().toString();
+            const ref = this.database.ref(`Reports/${id}`);
+            ref.set(reportData);
+            console.log('FirebaseManager: uploaded report to Reports/', id);
+            return true;
+        } catch (err) {
+            console.error('FirebaseManager: error uploading report', err);
+            return false;
+        }
     }
 
     static disconnect() {

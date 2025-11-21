@@ -1,115 +1,258 @@
 {
   "central": {
-    "city": "",
-    "address": "",
-    "longitude": 0.0,
-    "latitude": 0.0,
+    "city": "Altagracia de Orituco",
+    "address": "Av. Principal #123, Centro",
+    "longitude": -66.3815,
+    "latitude": 9.8562,
     "fiberService": {
-      "centralId": "",
+      "centralId": "1",
       "cabinets": [
         {
-          "nodeId": "",
-          "location": "",
-          "longitude": 0.0,
-          "latitude": 0.0,
-          "capacity": 0,
-          "boxCount": 0,
+          "nodeId": "N001",
+          "location": "Sector La Vega, Calle 5",
+          "longitude": -66.3832,
+          "latitude": 9.8581,
+          "capacity": 48,
+          "boxCount": 3,
           "status": "active",
-          "installDate": "2023-01-01T00:00:00Z",
+          "installDate": "2023-03-15T08:30:00Z",
           "boxes": [
             {
-              "boxId": "",
+              "boxId": "B001-1",
               "type": "distribution",
-              "color": "",
-              "portCapacity": 0,
-              "cableCapacity": 0,
-              "installDate": "2023-01-01T00:00:00Z",
+              "color": "verde",
+              "portCapacity": 16,
+              "cableCapacity": 8,
               "status": "active",
               "cables": [
                 {
-                  "cableId": "",
-                  "color": "",
+                  "cableId": "C001-1-1",
+                  "color": "amarillo",
                   "operationalStatus": "nominal",
-                  "specifications": {
-                    "fiberType": "SMF-28",
-                    "length": 0,
-                    "wavelength": 1550
-                  }
+                  "contractNumber": "CTR-2023-001234"
+                },
+                {
+                  "cableId": "C001-1-2",
+                  "color": "azul",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001235"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nodeId": "N002",
+          "location": "Urbanización Los Samanes",
+          "longitude": -66.3798,
+          "latitude": 9.8534,
+          "capacity": 32,
+          "boxCount": 2,
+          "status": "active",
+          "installDate": "2023-04-20T10:15:00Z",
+          "boxes": [
+            {
+              "boxId": "B002-1",
+              "type": "distribution",
+              "color": "gris",
+              "portCapacity": 12,
+              "cableCapacity": 6,
+              "status": "active",
+              "cables": [
+                {
+                  "cableId": "C002-1-1",
+                  "color": "azul",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001236"
+                },
+                {
+                  "cableId": "C002-1-2",
+                  "color": "rojo",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001237"
+                },
+                {
+                  "cableId": "C002-1-3",
+                  "color": "verde",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001238"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nodeId": "N003",
+          "location": "Sector El Calvario",
+          "longitude": -66.3851,
+          "latitude": 9.8517,
+          "capacity": 24,
+          "boxCount": 2,
+          "status": "maintenance",
+          "installDate": "2023-05-10T14:20:00Z",
+          "boxes": [
+            {
+              "boxId": "B003-1",
+              "type": "distribution",
+              "color": "naranja",
+              "portCapacity": 8,
+              "cableCapacity": 4,
+              "status": "active",
+              "cables": [
+                {
+                  "cableId": "C003-1-1",
+                  "color": "verde",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001239"
+                },
+                {
+                  "cableId": "C003-1-2",
+                  "color": "amarillo",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001240"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nodeId": "N004",
+          "location": "Barrio Unión",
+          "longitude": -66.3873,
+          "latitude": 9.8549,
+          "capacity": 36,
+          "boxCount": 2,
+          "status": "active",
+          "installDate": "2023-06-05T11:45:00Z",
+          "boxes": [
+            {
+              "boxId": "B004-1",
+              "type": "distribution",
+              "color": "blanco",
+              "portCapacity": 12,
+              "cableCapacity": 6,
+              "status": "active",
+              "cables": [
+                {
+                  "cableId": "C004-1-1",
+                  "color": "morado",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001241"
+                },
+                {
+                  "cableId": "C004-1-2",
+                  "color": "café",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001242"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nodeId": "N005",
+          "location": "Urbanización Miranda",
+          "longitude": -66.3776,
+          "latitude": 9.8521,
+          "capacity": 42,
+          "boxCount": 3,
+          "status": "active",
+          "installDate": "2023-07-18T09:20:00Z",
+          "boxes": [
+            {
+              "boxId": "B005-1",
+              "type": "distribution",
+              "color": "azul",
+              "portCapacity": 14,
+              "cableCapacity": 7,
+              "status": "active",
+              "cables": [
+                {
+                  "cableId": "C005-1-1",
+                  "color": "naranja",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001243"
+                },
+                {
+                  "cableId": "C005-1-2",
+                  "color": "gris",
+                  "operationalStatus": "nominal",
+                  "contractNumber": "CTR-2023-001244"
                 }
               ]
             }
           ]
         }
       ]
+    }
+  },
+  "satelliteService": {
+    "satelliteId": "SAT-GUAR-001",
+    "longitude": -66.3820,
+    "latitude": 9.8595,
+    "isOperational": true,
+    "coverageArea": "Altagracia de Orituco y zonas aledañas"
+  },
+  "UserLogin": [
+    {
+      "username": "mperez",
+      "firstname": "María",
+      "lastName": "Pérez",
+      "employeeId": "EMP001",
+      "passwordHash": "hashed_password_123",
+      "isBlocked": false,
+      "is2FAEnabled": true,
+      "lastLogin": "2024-01-15T08:45:00Z"
     },
-    "satelliteService": {
-      "satelliteId": "",
-      "longitude": 0.0,
-      "latitude": 0.0,
-      "isOperational": true,
-      "coverageArea": ""
+    {
+      "username": "crodriguez",
+      "firstname": "Carlos",
+      "lastName": "Rodríguez",
+      "employeeId": "EMP002",
+      "passwordHash": "hashed_password_456",
+      "isBlocked": false,
+      "is2FAEnabled": false,
+      "lastLogin": "2024-01-14T16:30:00Z"
     },
-    "login": [
-      {
-        "employeeId": "",
-        "passwordHash": "",
-        "roleId": "",
-        "isBlocked": false,
-        "is2FAEnabled": true,
-        "lastLogin": "2023-01-01T00:00:00Z"
-      }
-    ]
+    {
+      "username": "agomez",
+      "firstname": "Ana",
+      "lastName": "Gómez",
+      "employeeId": "EMP003",
+      "passwordHash": "hashed_password_789",
+      "isBlocked": true,
+      "is2FAEnabled": true,
+      "lastLogin": "2024-01-10T11:20:00Z"
+    },
+    {
+      "username": "jmartinez",
+      "firstname": "José",
+      "lastName": "Martínez",
+      "employeeId": "EMP004",
+      "passwordHash": "hashed_password_012",
+      "isBlocked": false,
+      "is2FAEnabled": true,
+      "lastLogin": "2024-01-16T09:15:00Z"
+    },
+    {
+      "username": "lhernandez",
+      "firstname": "Laura",
+      "lastName": "Hernández",
+      "employeeId": "EMP005",
+      "passwordHash": "hashed_password_345",
+      "isBlocked": false,
+      "is2FAEnabled": false,
+      "lastLogin": "2024-01-13T13:40:00Z"
+    }
+  ],
+  "Admins": {
+    "0": "administrador",
+    "1": "24680",
+    "2": "13579",
+    "3": "13245"
   },
   "system": {
     "apiVersion": "1.0.0",
-    "lastUpdate": "2023-01-01T00:00:00Z",
-    "isRecaptchaActive": true,
-    "isUnderMaintenance": false,
-    "operationalNodesCount": 0,
-    "operationalBoxesCount": 0,
-    "inoperativeNodesCount": 0,
-    "inoperativeBoxesCount": 0,
-    "platform": "production",
-    "isMapActive": true,
-    "is2FARunning": true,
-    "isHostRunning": true,
-    "isUpToDate": true,
-    "statusMetrics": {
-      "uptime": "99.95%",
-      "responseTime": "127ms",
-      "errorRate": "0.02%"
-    }
-  },
-  "local": {
-    "userPreferences": {
-      "language": "en",
-      "theme": "dark",
-      "mapSettings": {
-        "distanceUnit": "metric",
-        "coordinateFormat": "DMS",
-        "defaultZoom": 12,
-        "showLabels": true,
-        "mapTiles": "vector",
-        "refreshRate": 30
-      },
-      "notifications": {
-        "criticalAlerts": true,
-        "maintenanceNotifications": true,
-        "reportUpdates": true
-      }
-    },
-    "session": {
-      "sessionId": "",
-      "lastActivity": "2023-01-01T00:00:00Z",
-      "timeout": 1800,
-      "activeModules": ["dashboard", "map", "reports"]
-    }
-  },
-  "userLogin": {
-    "username": "",
-    "password":"",
-    "isBlocked": false,
-    "is2FAEnabled": true,
-    "lastLogin": "2023-01-01T00:00:00Z"
+    "lastUpdate": "2024-01-16T10:00:00Z"
   }
 }

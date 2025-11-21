@@ -142,7 +142,7 @@ class AuthSystem {
             firstName, 
             lastName, 
             employeeId, 
-            password,
+            password: password,
             registrationDate: new Date().toISOString()
         };
         
@@ -184,17 +184,21 @@ class AuthSystem {
         }
 
         let users = StorageManager.getUsers();
-        let user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
+        let user = users.find(u => (u.name && u.name.toLowerCase() === name.toLowerCase() || (u.employeeId && u.employeeId.toString() === name)) && u.password === password);
 
         // If not found locally, try Firebase
         if (!user) {
             try {
                 const remote = await FirebaseManager.getUserByNameOrEmployeeId(name);
-                if (remote && remote.password === password) {
-                    user = remote;
-                    // Save locally for offline
-                    users.push(user);
-                    StorageManager.saveUsers(users);
+                if (remote) {
+                    // Compare incoming password with remote stored password/hash
+                    const remoteMatch = (remote.password === password) || (remote.passwordHash && remote.passwordHash === password) || (remote.password && remote.password === password);
+                    if (remoteMatch) {
+                        user = remote;
+                        // Save locally for offline
+                        users.push(user);
+                        StorageManager.saveUsers(users);
+                    }
                 }
             } catch (err) {
                 console.error('AuthSystem: Firebase lookup failed', err);
@@ -249,19 +253,12 @@ class AuthSystem {
                 const target = basePath + 'gestion.html';
                 console.debug('AuthSystem: redirecting to', target);
                 console.debug('AuthSystem: window.location before redirect', window.location.href, window.location.origin, window.location.protocol);
-                // Verify the user was persisted; if not use sessionStorage fallback then redirect
+                // Verify the user was persisted; if not, inform the user and abort redirect
                 const persisted = StorageManager.getCurrentUser();
                 if (!persisted) {
-                    console.warn('AuthSystem: user not persisted to localStorage; applying sessionStorage fallback');
-                    try {
-                        const fallbackUser = { name: user.name, firstName: user.firstName, lastName: user.lastName, employeeId: user.employeeId };
-                        sessionStorage.setItem('app_current_user_fallback', JSON.stringify(fallbackUser));
-                        sessionStorage.setItem('app_current_user_fallback_time', Date.now().toString());
-                    } catch (se) {
-                        console.error('AuthSystem: sessionStorage fallback failed', se);
-                        this.showMessage('No se puede almacenar la sesión. Habilita almacenamiento local o usa otro navegador.', 'error');
-                        return;
-                    }
+                    console.error('AuthSystem: user not persisted to localStorage; aborting redirect');
+                    this.showMessage('No se puede almacenar la sesión en el almacenamiento local. Habilita localStorage o usa otro navegador.', 'error');
+                    return;
                 }
 
                 // Do a robust redirect (assign ensures navigation and sets referrer)

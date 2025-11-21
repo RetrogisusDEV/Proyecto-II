@@ -8,20 +8,7 @@ class AppManager {
             // Verificar autenticación
             let currentUser = StorageManager.getCurrentUser();
             console.debug('AppManager: initApplication currentUser ->', currentUser);
-            // If no current user in localStorage, check a sessionStorage fallback set during login
-            if (!currentUser && sessionStorage.getItem('app_current_user_fallback')) {
-                try {
-                    const fallback = JSON.parse(sessionStorage.getItem('app_current_user_fallback'));
-                    console.debug('AppManager: restoring currentUser from sessionStorage fallback ->', fallback);
-                    StorageManager.setCurrentUser(fallback);
-                    // Remove fallback so we don't rely on it again
-                    sessionStorage.removeItem('app_current_user_fallback');
-                    sessionStorage.removeItem('app_current_user_fallback_time');
-                    currentUser = StorageManager.getCurrentUser();
-                } catch (err) {
-                    console.error('AppManager: failed to restore fallback currentUser', err);
-                }
-            }
+            // Depend only on persistent localStorage (StorageManager). No sessionStorage fallback.
             console.debug('AppManager: initApplication currentUser ->', currentUser);
             if (!currentUser) {
                 console.warn('AppManager: No currentUser found, redirecting to login');
@@ -82,6 +69,43 @@ class AppManager {
             console.log(`📁 Cargados ${localNodes.length} nodos desde caché local`);
         }
 
+        // Si no hay nodos en caché, intentar cargar `db.json` local como fuente de datos
+        if (this.appState.nodes.length === 0) {
+            try {
+                const resp = await fetch('db.json');
+                if (resp && resp.ok) {
+                    const db = await resp.json();
+                    // Cargar nodos desde db.json -> central.fiberService.cabinets
+                    if (db && db.central && db.central.fiberService && Array.isArray(db.central.fiberService.cabinets)) {
+                        const cabinets = db.central.fiberService.cabinets;
+                        const mapped = cabinets.map(c => (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(c) : c);
+                        this.appState.nodes = mapped;
+                        StorageManager.saveNodes(mapped);
+                        this.updateUI();
+                        console.log(`📄 Cargados ${mapped.length} nodos desde db.json`);
+                    }
+
+                    // Cargar usuarios desde db.json si no hay usuarios locales
+                    const localUsers = StorageManager.getUsers();
+                    if ((!localUsers || localUsers.length === 0) && Array.isArray(db.userlogin)) {
+                        const users = db.userlogin.map(u => ({
+                            name: u.username || u.name || '',
+                            firstName: u.firstname || u.firstName || '',
+                            lastName: u.lastName || u.lastName || '',
+                            employeeId: u.employeeId || u.employee || '',
+                            // No podemos invertir un hash; almacenar passwordHash en el campo password para permitir login comparaciones si el sistema espera hashes
+                            password: u.password || u.passwordHash || '' ,
+                            registrationDate: u.lastLogin || new Date().toISOString()
+                        }));
+                        StorageManager.saveUsers(users);
+                        console.log(`📄 Cargados ${users.length} usuarios desde db.json`);
+                    }
+                }
+            } catch (err) {
+                console.warn('AppManager: no se pudo cargar db.json localmente', err);
+            }
+        }
+
         if (this.appState.isOnline) {
             FirebaseManager.setupNodesListener(this.appState);
         } else {
@@ -110,8 +134,12 @@ class AppManager {
     }
 
     static displayNodeById(nodeId) {
-        const node = this.appState.nodes.find(n => n.id === nodeId);
-        if (node) {
+        const raw = this.appState.nodes.find(n => {
+            const id = (typeof NodeUtils !== 'undefined') ? NodeUtils.getId(n) : (n && n.id);
+            return id === nodeId;
+        });
+        if (raw) {
+            const node = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(raw) : raw;
             UIManager.displayNodeInfo(node, this.appState);
             MapManager.viewNodeOnMap(nodeId, this.appState, true);
         }

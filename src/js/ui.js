@@ -90,31 +90,60 @@ class UIManager {
         if (sidebarContent) {
             if(infoLoading) infoLoading.style.display = 'none';
 
+            const node = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(nodeData) : nodeData;
+            const raw = node.originalData || nodeData;
+
+            // Build boxes HTML
+            let boxesHtml = '';
+            if (Array.isArray(raw.boxes) && raw.boxes.length > 0) {
+                boxesHtml = '<div class="mt-4"><h4 class="text-sm font-medium mb-2">Cajas</h4>' + raw.boxes.map(b => {
+                    const cables = Array.isArray(b.cables) ? b.cables.map(c => `\n• ${c.cableId || ''} — ${c.color || ''} — ${c.operationalStatus || ''} ${c.contractNumber ? ' ('+c.contractNumber+')' : ''}`).join('') : '';
+                    return `<div class="mb-3 p-3 bg-gray-50 rounded"><div class="text-sm font-medium">${b.boxId || b.box || 'Caja'}</div><div class="text-xs text-gray-600">Tipo: ${b.type || ''} • Puertos: ${b.portCapacity || ''} • Capacidad de cable: ${b.cableCapacity || ''} • Estado: ${b.status || ''}</div><div class="text-xs text-gray-500 mt-2">Cables:${cables}</div></div>`;
+                }).join('') + '</div>';
+            }
+
             sidebarContent.innerHTML = `
                 <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
                     <div class="bg-red-600 p-4 text-white">
-                        <h3 class="text-lg font-semibold">${nodeData.name || 'Nodo Desconocido'}</h3>
+                        <h3 class="text-lg font-semibold">${node.name || 'Nodo Desconocido'}</h3>
                     </div>
                     <div class="p-4">
                         <div class="mb-3">
                             <span class="text-sm text-gray-500 block">ID</span>
-                            <span class="font-medium">${nodeData.id}</span>
+                            <span class="font-medium">${node.id}</span>
                         </div>
                         <div class="mb-3">
                             <span class="text-sm text-gray-500 block">Estado</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${nodeData.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${nodeData.status || 'OK'}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${node.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${node.status || 'OK'}
                             </span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-sm text-gray-500 block">Ubicación</span>
+                            <span class="font-medium">${raw.location || raw.locationName || ''}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-sm text-gray-500 block">Capacidad</span>
+                            <span class="font-medium">${raw.capacity || ''}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-sm text-gray-500 block">Cajas</span>
+                            <span class="font-medium">${raw.boxCount || (raw.boxes ? raw.boxes.length : '')}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-sm text-gray-500 block">Instalación</span>
+                            <span class="font-medium">${raw.installDate || ''}</span>
                         </div>
                         <div class="mb-4">
                             <span class="text-sm text-gray-500 block">Coordenadas</span>
-                            <span class="font-mono text-sm">${nodeData.lat.toFixed(4)}, ${nodeData.lon.toFixed(4)}</span>
+                            <span class="font-mono text-sm">${(node.lat || 0).toFixed(4)}, ${(node.lon || 0).toFixed(4)}</span>
                         </div>
+                        ${boxesHtml}
                         <div class="flex space-x-2">
-                            <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition" onclick="MapManager.viewNodeOnMap('${nodeData.id}', window.AppManager.appState)">
+                            <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition" onclick="MapManager.viewNodeOnMap('${node.id}', window.AppManager.appState)">
                                 Ver en Mapa
                             </button>
-                            <button class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded transition" onclick="MapManager.showDirections('${nodeData.id}', window.AppManager.appState)">
+                            <button class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded transition" onclick="MapManager.showDirections('${node.id}', window.AppManager.appState)">
                                 Cómo Llegar
                             </button>
                         </div>
@@ -160,8 +189,9 @@ class UIManager {
 
             if (listLoading) listLoading.style.display = 'none';
 
-            listElement.innerHTML = appState.nodes.map(node => 
-                `<div class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition ${node.id === appState.selectedNodeId ? 'bg-red-50 border-red-200' : ''}" onclick="AppManager.displayNodeById('${node.id}')">
+            listElement.innerHTML = appState.nodes.map(origNode => {
+                const node = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(origNode) : origNode;
+                return `<div class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition ${node.id === appState.selectedNodeId ? 'bg-red-50 border-red-200' : ''}" onclick="AppManager.displayNodeById('${node.id}')">
                     <div class="flex items-start">
                         <div class="flex-shrink-0 w-10 h-10 ${node.id === appState.selectedNodeId ? 'bg-red-600' : 'bg-red-100'} rounded-full flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 ${node.id === appState.selectedNodeId ? 'text-white' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -179,8 +209,8 @@ class UIManager {
                             </div>
                         </div>
                     </div>
-                </div>`
-            ).join('');
+                </div>`;
+            }).join('');
         }
     }
 

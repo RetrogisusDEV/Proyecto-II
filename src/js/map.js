@@ -108,28 +108,29 @@ class MapManager {
             }),
         });
 
-        const features = appState.nodes.map(node => {
+        const features = appState.nodes.map(origNode => {
+            const node = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(origNode) : origNode;
             if (typeof node.lat !== 'number' || typeof node.lon !== 'number') {
-                console.warn(`⚠️ Nodo inválido (lat/lon faltante):`, node);
+                console.warn('⚠️ Nodo inválido (lat/lon faltante):', origNode);
                 return null;
             }
 
             const point = new ol.geom.Point(ol.proj.fromLonLat([node.lon, node.lat]));
-            
+
             const feature = new ol.Feature({
                 geometry: point,
                 nodeData: node 
             });
-            
+
             feature.setId(node.id);
-            
+
             // Aplicar estilo según selección
             if (node.id === appState.selectedNodeId) {
                 feature.setStyle(selectedMarkerStyle);
             } else {
                 feature.setStyle(normalMarkerStyle);
             }
-            
+
             return feature;
         }).filter(f => f !== null);
 
@@ -146,13 +147,34 @@ class MapManager {
         // Crear elemento popup
         const popupElement = document.createElement('div');
         popupElement.className = 'ol-popup';
+        // Preferir originalData si existe para mostrar campos rico
+        const raw = nodeData.originalData || nodeData;
+        const location = raw.location || raw.locationName || raw.name || '';
+        const capacity = raw.capacity || raw.portCapacity || '';
+        const boxCount = raw.boxCount || (raw.boxes ? raw.boxes.length : '');
+        const installDate = raw.installDate || raw.installationDate || '';
+
+        // Build boxes / cables summary HTML
+        let boxesHtml = '';
+        if (Array.isArray(raw.boxes) && raw.boxes.length > 0) {
+            boxesHtml = '<div class="popup-boxes"><strong>Cajas:</strong><ul>' + raw.boxes.map(b => {
+                const cables = Array.isArray(b.cables) ? b.cables.map(c => `${c.cableId || ''} (${c.operationalStatus || ''})`).join(', ') : '';
+                return `<li><strong>${b.boxId || b.box || ''}</strong> - ${b.type || ''} - ${b.portCapacity || b.cableCapacity || ''} puertos ${b.status ? '- ' + b.status : ''}<div class="text-xs text-gray-600">Cables: ${cables}</div></li>`;
+            }).join('') + '</ul></div>';
+        }
+
         popupElement.innerHTML = `
             <div class="popup-header">
-                <h3 class="font-semibold">${nodeData.name || 'Nodo Desconocido'}</h3>
+                <h3 class="font-semibold">${nodeData.name || location || 'Nodo Desconocido'}</h3>
             </div>
             <div class="popup-content">
                 <p><strong>ID:</strong> ${nodeData.id}</p>
-                <p><strong>Estado:</strong> ${nodeData.status || 'OK'}</p>
+                <p><strong>Ubicación:</strong> ${location}</p>
+                <p><strong>Estado:</strong> ${nodeData.status || raw.status || 'OK'}</p>
+                <p><strong>Capacidad:</strong> ${capacity}</p>
+                <p><strong>Cajas:</strong> ${boxCount}</p>
+                <p><strong>Instalación:</strong> ${installDate}</p>
+                ${boxesHtml}
                 <div class="popup-actions">
                     <button class="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded" onclick="AppManager.viewNodeOnMap('${nodeData.id}', true)">Ver Detalles</button>
                     <button class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded" onclick="MapManager.closePopup()">Cerrar</button>

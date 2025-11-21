@@ -21,10 +21,10 @@ class ReportsManager {
                                         ${report.status}
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-1">${report.description.substring(0, 100)}${report.description.length > 100 ? '...' : ''}</p>
+                                <p class="text-sm text-gray-600 mb-1">${(report.description || '').substring(0, 100)}${(report.description || '').length > 100 ? '...' : ''}</p>
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>${report.nodeName}</span>
-                                    <span>${new Date(report.date).toLocaleDateString()}</span>
+                                    <span>${report.date ? new Date(report.date).toLocaleDateString() : ''}</span>
                                 </div>
                             </div>
                         `).join('')}
@@ -36,25 +36,34 @@ class ReportsManager {
     static showReportModal(appState) {
         const modal = document.getElementById('reportModal');
         const reportNodeSelect = document.getElementById('reportNode');
-        
-        reportNodeSelect.innerHTML = '<option value="">Seleccionar nodo</option>';
-        appState.nodes.forEach(node => {
-            const option = document.createElement('option');
-            option.value = node.id;
-            option.textContent = node.name;
-            reportNodeSelect.appendChild(option);
-        });
+        if (!reportNodeSelect) {
+            console.warn('ReportsManager: #reportNode select not found in DOM');
+        } else {
+            reportNodeSelect.innerHTML = '<option value="">Seleccionar nodo</option>';
+            (appState.nodes || []).forEach(origNode => {
+                const node = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(origNode) : origNode;
+                if (!node || !node.id) return;
+                const option = document.createElement('option');
+                option.value = node.id;
+                option.textContent = node.name || node.id;
+                reportNodeSelect.appendChild(option);
+            });
+        }
         
         modal.classList.remove('hidden');
         
         const cancelBtn = document.getElementById('cancelReport');
         const reportForm = document.getElementById('reportForm');
         
-        cancelBtn.onclick = () => modal.classList.add('hidden');
-        reportForm.onsubmit = (e) => {
-            e.preventDefault();
-            this.generateReport(appState);
-        };
+        if (cancelBtn) cancelBtn.onclick = () => modal.classList.add('hidden');
+        if (reportForm) {
+            reportForm.onsubmit = (e) => {
+                e.preventDefault();
+                this.generateReport(appState);
+            };
+        } else {
+            console.warn('ReportsManager: #reportForm not found; cannot attach submit handler');
+        }
     }
 
     static generateReport(appState) {
@@ -67,7 +76,11 @@ class ReportsManager {
             return;
         }
         
-        const node = appState.nodes.find(n => n.id === reportNode);
+        const node = (appState.nodes || []).map(n => (typeof NodeUtils !== 'undefined' ? NodeUtils.toAppNode(n) : n)).find(n => n && n.id === reportNode);
+        if (!node) {
+            alert('Nodo seleccionado no encontrado. Por favor selecciona un nodo válido.');
+            return;
+        }
         const reportTypes = {
             'mantenimiento': 'Mantenimiento',
             'falla': 'Falla Técnica',
@@ -84,14 +97,55 @@ class ReportsManager {
             description: reportDescription,
             status: 'pendiente',
             date: new Date().toISOString(),
-            user: {
-                name: `${appState.currentUser.firstName} ${appState.currentUser.lastName}`,
-                employeeId: appState.currentUser.employeeId
-            }
+            user: (appState.currentUser ? {
+                name: `${appState.currentUser.firstName || ''} ${appState.currentUser.lastName || ''}`.trim(),
+                employeeId: appState.currentUser.employeeId || ''
+            } : (function(){
+                const cu = StorageManager.getCurrentUser() || {};
+                return { name: `${cu.firstName || ''} ${cu.lastName || ''}`.trim(), employeeId: cu.employeeId || '' };
+            })())
         };
         
         appState.reports.unshift(newReport);
         StorageManager.saveReports(appState.reports);
+        // If report is a fault, update node status locally and persist
+        try {
+            if (reportType === 'falla') {
+                const allNodes = appState.nodes || [];
+                for (let i = 0; i < allNodes.length; i++) {
+                    const raw = allNodes[i];
+                    const n = (typeof NodeUtils !== 'undefined') ? NodeUtils.toAppNode(raw) : raw;
+                    if (n && n.id === reportNode) {
+                        // update original raw object if present
+                        if (raw) {
+                            if (raw.status !== undefined) raw.status = 'maintenance';
+                            if (raw.latitude !== undefined && raw.longitude !== undefined) {
+                                // keep coords
+                            }
+                        }
+                        // replace stored node with normalized object that carries originalData
+                        const updatedNode = Object.assign({}, n, { status: 'maintenance', originalData: raw || n.originalData || n });
+                        // update in appState.nodes preserving original stored element
+                        appState.nodes[i] = updatedNode;
+                        break;
+                    }
+                }
+                // persist nodes
+                try { StorageManager.saveNodes(appState.nodes); } catch (e) { console.warn('ReportsManager: no se pudo guardar nodos tras marcar falla', e); }
+                // refresh UI/map
+                try { AppManager.updateUI(); } catch (e) { /* ignore */ }
+            }
+        } catch (e) {
+            console.warn('ReportsManager: error actualizando estado de nodo tras reporte', e);
+        }
+        // Guardar reporte pendiente en cache local para subir a Firebase cuando haya sincronización
+        try {
+            const pending = StorageManager.getPendingReports();
+            pending.push(newReport);
+            StorageManager.savePendingReports(pending);
+        } catch (e) {
+            console.warn('ReportsManager: no se pudo guardar reporte pendiente', e);
+        }
         
         document.getElementById('reportModal').classList.add('hidden');
         document.getElementById('reportForm').reset();
@@ -104,7 +158,10 @@ class ReportsManager {
         const appState = window.AppManager.appState;
         const report = appState.reports.find(r => r.id === reportId);
         if (!report) return;
-        
+        // Find node original data for detailed info
+        const node = (appState.nodes || []).map(n => (typeof NodeUtils !== 'undefined' ? NodeUtils.toAppNode(n) : n)).find(n => n && n.id === report.nodeId);
+        const raw = node ? (node.originalData || node) : null;
+
         const reportWindow = window.open('', '_blank');
         reportWindow.document.write(`
             <!DOCTYPE html>
@@ -156,6 +213,13 @@ class ReportsManager {
                     <div><span class="label">Nodo:</span> ${report.nodeName} (ID: ${report.nodeId})</div>
                     <div><span class="label">Tipo:</span> ${report.type}</div>
                 </div>
+
+                ${raw ? `
+                <div class="section">
+                    <div class="label">Información del Nodo (desde DB)</div>
+                    <pre>${JSON.stringify(raw, null, 2)}</pre>
+                </div>
+                ` : ''}
                 
                 <div class="section">
                     <div class="label">Descripción:</div>

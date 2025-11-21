@@ -23,7 +23,6 @@
   <div id="login-warning" class="hidden fixed top-4 right-4 z-50 bg-yellow-100 border border-yellow-300 text-yellow-900 p-3 rounded-md shadow">
     <div>No se detectó sesión de usuario.</div>
     <div class="mt-2 flex space-x-2">
-      <button id="restore-session-btn" class="px-3 py-1 bg-yellow-200 hover:bg-yellow-300 rounded">Restaurar sesión</button>
       <button id="go-login-btn" class="px-3 py-1 bg-yellow-100 hover:bg-yellow-200 rounded">Ir a Login</button>
     </div>
   </div>
@@ -36,6 +35,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
 
     <!-- Scripts de la aplicación -->
+    <!-- Node utilities (load before other app scripts) -->
+    <script src="js/nodeutils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/firebase.js"></script>
@@ -48,24 +49,11 @@
       // Inicializar la aplicación cuando el DOM esté listo
       document.addEventListener('DOMContentLoaded', async () => {
         try {
-          // Mostrar banner si no se detecta currentUser (fallback for debug)
-          if (!StorageManager.getCurrentUser() && sessionStorage.getItem('app_current_user_fallback')) {
+          // Inicializar sincronización antes de la app para asegurar caché local actualizada
+          try { if (window.SyncManager) await SyncManager.initialize(); } catch (se) { console.warn('SyncManager init failed', se); }
+          // Mostrar banner si no se detecta currentUser (usar solo localStorage)
+          if (!StorageManager.getCurrentUser()) {
             document.getElementById('login-warning').classList.remove('hidden');
-            // Setup restore button
-            document.getElementById('restore-session-btn').addEventListener('click', () => {
-              try {
-                const fallback = JSON.parse(sessionStorage.getItem('app_current_user_fallback'));
-                if (fallback) {
-                  StorageManager.setCurrentUser(fallback);
-                  sessionStorage.removeItem('app_current_user_fallback');
-                  sessionStorage.removeItem('app_current_user_fallback_time');
-                  window.location.reload();
-                }
-              } catch (err) {
-                console.error('Error restaurando sesión desde fallback', err);
-                alert('No se pudo restaurar la sesión. Intenta ir al Login.');
-              }
-            });
             document.getElementById('go-login-btn').addEventListener('click', () => {
               window.location.href = 'login.html';
             });
