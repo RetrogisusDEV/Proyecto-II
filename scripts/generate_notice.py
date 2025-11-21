@@ -16,6 +16,7 @@ import re
 import os
 import sys
 from datetime import datetime
+import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
@@ -53,8 +54,15 @@ def scan_files():
                         found.setdefault(name, set()).add((ver, url))
 
                 # generic detection for firebase, ol, tailwind in script tags
-                if 'cdn.tailwindcss.com' in text:
-                    found.setdefault('Tailwind CSS', set()).add((None, 'https://cdn.tailwindcss.com'))
+                # Instead of substring matching, scan URLs and check host
+                for m in re.finditer(r'https?://[^\s"\']+', text):
+                    url = m.group(0)
+                    try:
+                        parsed = urllib.parse.urlparse(url)
+                        if parsed.hostname and parsed.hostname.lower() == 'cdn.tailwindcss.com':
+                            found.setdefault('Tailwind CSS', set()).add((None, url))
+                    except Exception:
+                        continue
                 if 'firebasejs' in text:
                     # best-effort extract
                     for m in re.finditer(r'https?://www\.gstatic\.com/firebasejs/([0-9\.]+)/(?:firebase-)?', text):
