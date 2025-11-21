@@ -1,0 +1,98 @@
+/* Estilos para componentes de la interfaz */
+
+/* Estilos personalizados para el diseño tipo YouTube */
+.sidebar-transition {
+  transition: all 0.3s ease;
+}
+
+.mobile-sidebar {
+  transform: translateX(-100%);
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+.mobile-sidebar-right {
+  transform: translateX(100%);
+}
+
+.mobile-sidebar-right.open {
+  transform: translateX(0);
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.overlay.active {
+  display: block;
+}
+
+/* Animación para el marcador seleccionado */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.marker-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+/* Estilos para el popup mejorado */
+.popup-header {
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  color: white;
+  padding: 12px 16px;
+}
+
+.popup-content {
+  padding: 16px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+/* Modal de reportes */
+.report-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.report-modal.hidden {
+  display: none;
+}
+
+.report-modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 1rem;
+}
+
+/* Estados de conectividad */
+.connectivity-online {
+  background-color: #10b981;
+}
+
+.connectivity-offline {
+  background-color: #ef4444;
+}

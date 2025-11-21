@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="Sistema de gestión de nodos y reportes con mapa interactivo" />
+    <meta name="theme-color" content="#ff0000" />
+
+    <title>StarNet - Sistema de Gestión de Nodos</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.6.0/ol.css" />
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/components.css" />
+  </head>
+  <body class="bg-gray-50">
+  <div id="login-warning" class="hidden fixed top-4 right-4 z-50 bg-yellow-100 border border-yellow-300 text-yellow-900 p-3 rounded-md shadow">
+    <div>No se detectó sesión de usuario.</div>
+    <div class="mt-2 flex space-x-2">
+      <button id="restore-session-btn" class="px-3 py-1 bg-yellow-200 hover:bg-yellow-300 rounded">Restaurar sesión</button>
+      <button id="go-login-btn" class="px-3 py-1 bg-yellow-100 hover:bg-yellow-200 rounded">Ir a Login</button>
+    </div>
+  </div>
+    <!-- Cargar componente de la aplicación -->
+    <div id="app-container"></div>
+
+    <!-- Scripts externos -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v10.6.0/dist/ol.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
+
+    <!-- Scripts de la aplicación -->
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+      // Inicializar la aplicación cuando el DOM esté listo
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          // Mostrar banner si no se detecta currentUser (fallback for debug)
+          if (!StorageManager.getCurrentUser() && sessionStorage.getItem('app_current_user_fallback')) {
+            document.getElementById('login-warning').classList.remove('hidden');
+            // Setup restore button
+            document.getElementById('restore-session-btn').addEventListener('click', () => {
+              try {
+                const fallback = JSON.parse(sessionStorage.getItem('app_current_user_fallback'));
+                if (fallback) {
+                  StorageManager.setCurrentUser(fallback);
+                  sessionStorage.removeItem('app_current_user_fallback');
+                  sessionStorage.removeItem('app_current_user_fallback_time');
+                  window.location.reload();
+                }
+              } catch (err) {
+                console.error('Error restaurando sesión desde fallback', err);
+                alert('No se pudo restaurar la sesión. Intenta ir al Login.');
+              }
+            });
+            document.getElementById('go-login-btn').addEventListener('click', () => {
+              window.location.href = 'login.html';
+            });
+          }
+          await AppManager.initApplication();
+        } catch (error) {
+          console.error('Error inicializando la aplicación:', error);
+          AppManager.showErrorToUser('Error al cargar la aplicación. Por favor, recarga la página.');
+        }
+      });
+    </script>
+  </body>
+</html>

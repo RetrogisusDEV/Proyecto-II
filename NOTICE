@@ -1,0 +1,34 @@
+NOTICE - third-party attributions (concise)
+
+Project: Sistema de gestión y monitoreo de averías y reportes para la
+empresa privada de fibra StarNET
+Repository: RetrogisusDEV/Proyecto
+Scan date: 2025-11-20
+
+Detected components (name — detected version if any — source URL):
+
+- MetroUI — references to Metro 4.5.7 and MetroUI v5 in HTML
+  - https://cdnjs.cloudflare.com/ajax/libs/metro/4.5.7/metro.css
+  - https://cdn.metroui.org.ua/v5/css/metro-all.min.css
+
+- OpenLayers — v10.6.0
+  - https://cdn.jsdelivr.net/npm/ol@v10.6.0/
+
+- Firebase JS SDK — 9.10.0
+  - https://www.gstatic.com/firebasejs/9.10.0/
+
+- Flask (Python) — listed in requirements.txt (no pinned version)
+
+- requests (Python) — listed in requirements.txt (no pinned version)
+
+- pywebview (Python) — listed in requirements.txt (no pinned version)
+
+- PyArmor — referenced in build scripts (used for obfuscation)
+  - https://pyarmor.org/
+
+- PyInstaller — referenced in build scripts (used for packaging)
+  - https://www.pyinstaller.org/
+
+License verification: consult the upstream project pages above for each
+dependency to confirm the precise license text and any attribution
+requirements. This NOTICE lists detected components and source URLs only.

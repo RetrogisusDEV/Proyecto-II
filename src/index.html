@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Splash - Mi App</title>
+		<style>
+			/* Fullscreen centered container */
+			html, body {
+				height: 100%;
+				margin: 0;
+				background: #4437ff;
+				-webkit-font-smoothing:antialiased;
+				-moz-osx-font-smoothing:grayscale;
+			}
+			.splash-root {
+				height: 100%;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: linear-gradient(180deg, #4437ff 0%, #2a21a0 100%);
+			}
+
+			/* Image sizing: occupy 75vmin (of smaller viewport dimension), but respect the logo's max size 659x182 */
+			.splash-image {
+				width: 75vmin;
+				max-width: 659px;
+				height: auto;
+				max-height: 182px;
+				display: block;
+				box-shadow: 0 10px 30px rgba(18, 38, 63, 0.08);
+				border-radius: 12px;
+				overflow: hidden;
+				transform-origin: center center;
+				opacity: 0;
+				animation: fadeIn 400ms ease-out forwards;
+			}
+
+			@keyframes fadeIn {
+				from { opacity: 0; transform: scale(0.98); }
+				to   { opacity: 1; transform: scale(1); }
+			}
+
+			@keyframes fadeOut {
+				from { opacity: 1; transform: scale(1); }
+				to   { opacity: 0; transform: scale(1.02); }
+			}
+
+			.fade-out {
+				animation: fadeOut 600ms ease-in forwards;
+			}
+
+			/* Make sure SVG scales cleanly */
+			.splash-image img {
+				width: 100%;
+				height: auto;
+				display: block;
+				object-fit: contain;
+			}
+
+			/* Optional: small accessible hidden text for screen-readers */
+			.sr-only { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+		</style>
+	</head>
+	<body>
+		<div class="splash-root">
+			<!-- Inline SVG used as image (500x500). It will occupy 75% of the viewport up to 500px) -->
+			<div id="splash" class="splash-image" role="img" aria-label="Logo de StarNET">
+				<!-- Imagen fija: tamaño original 659x182, mostrada responsivamente -->
+				<img src="images/logo.png" alt="StarNET" width="659" height="182">
+			</div>
+			</div>
+			<span class="sr-only">Redirigiendo a la pantalla de inicio de sesión...</span>
+		</div>
+
+		<script>
+			// After 2 seconds go to login.html with a fade-out animation on the image.
+			(function() {
+				var splash = document.getElementById('splash');
+				// Start timer: fade-out starts slightly before navigation so animation is visible
+				var totalDelay = 2000; // ms until navigation
+				var fadeDuration = 600; // matches .fade-out animation duration
+				var fadeStart = totalDelay - fadeDuration; // when to add fade class
+
+				// Ensure values make sense
+				if (fadeStart < 0) fadeStart = 0;
+
+				// Add fade-out class shortly before navigation
+				setTimeout(function() {
+					splash.classList.add('fade-out');
+				}, fadeStart);
+
+				// Navigate after `totalDelay` milliseconds
+				setTimeout(function() {
+					// Use relative path to login.html in same folder
+					window.location.href = 'login.html';
+				}, totalDelay);
+			})();
+		</script>
+	</body>
+</html>
