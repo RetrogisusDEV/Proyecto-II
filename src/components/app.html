@@ -3,7 +3,7 @@
   <div class="flex items-center justify-between px-4 py-2">
     <!-- Menú hamburguesa y logo -->
     <div class="flex items-center">
-      <button id="mobile-menu-toggle" class="p-2 mr-2 rounded-full hover:bg-red-500 md:hidden text-white">
+      <button id="mobile-menu-toggle" class="p-2 mr-2 rounded-full hover:bg-red-500 text-white">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -40,11 +40,6 @@
         </svg>
         <span>Nodos</span>
       </button>
-      <button id="mobile-info-toggle" class="p-2 rounded-full hover:bg-red-500 md:hidden text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-      </button>
     </div>
   </div>
 </header>
@@ -53,7 +48,7 @@
   <!-- Panel lateral izquierdo (Información del nodo) -->
   <aside
     id="sidebar-info"
-    class="sidebar-transition w-80 bg-white shadow-lg border-r border-gray-200 overflow-y-auto md:block mobile-sidebar fixed md:relative top-14 bottom-0 z-40"
+    class="sidebar-transition w-80 bg-white shadow-lg border-r border-gray-200 overflow-y-auto md:block mobile-sidebar fixed relative top-0 bottom-0 z-40"
   >
     <div class="p-4 border-b border-gray-200">
       <h2 class="text-lg font-semibold text-gray-900">Información del Nodo</h2>
@@ -93,7 +88,7 @@
   <!-- Panel lateral derecho (Lista de nodos y reportes) -->
   <aside
     id="sidebar-nodes"
-    class="sidebar-transition w-80 bg-white shadow-lg border-l border-gray-200 overflow-y-auto md:block mobile-sidebar-right fixed md:relative top-14 bottom-0 right-0 z-40"
+    class="sidebar-transition w-80 bg-white shadow-lg border-l border-gray-200 overflow-y-auto md:block mobile-sidebar-right fixed relative top-0 bottom-0 right-0 z-40"
   >
     <div class="p-4 border-b border-gray-200">
       <h2 id="sidebarTitle" class="text-lg font-semibold text-gray-900">Reportes</h2>

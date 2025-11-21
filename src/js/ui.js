@@ -278,7 +278,7 @@ class UIManager {
             
             if (statusElement) {
                 statusElement.textContent = appState.isOnline ? '🟢 En línea' : '🔴 Sin conexión';
-                statusElement.style.background = appState.isOnline ? '#10b981' : '#ef4444';
+                statusElement.style.background = appState.isOnline ? '#16b910ff' : '#ef4444';
                 statusElement.classList.remove('hidden');
             }
         };
