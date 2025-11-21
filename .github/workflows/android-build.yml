@@ -46,7 +46,8 @@ jobs:
             libssl-dev \
             automake \
             autoconf \
-            libtool
+            libtool \
+            openjdk-11-jdk
 
       - name: Preparar Python
         uses: actions/setup-python@v4
@@ -58,11 +59,35 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Desactivar modo Debug en Python
-        # Esto busca "debug=True" en main.py y lo cambia a "debug=False"
+      - name: Verificar archivos en el directorio
         run: |
-          sed -i 's/debug=True/debug=False/g' main.py
-          echo "Modo debug desactivado en main.py"
+          pwd
+          ls -la
+          echo "Verificando buildozer.spec:"
+          if [ -f "buildozer.spec" ]; then
+            echo "✓ buildozer.spec encontrado"
+          else
+            echo "✗ buildozer.spec NO encontrado"
+            exit 1
+          fi
+
+      - name: Inicializar Buildozer (si es necesario)
+        run: |
+          if [ ! -f ".buildozer" ]; then
+            echo "Inicializando Buildozer..."
+            buildozer init
+          else
+            echo "Buildozer ya está inicializado"
+          fi
+
+      - name: Desactivar modo Debug en Python
+        run: |
+          if [ -f "main.py" ]; then
+            sed -i 's/debug=True/debug=False/g' main.py
+            echo "Modo debug desactivado en main.py"
+          else
+            echo "ADVERTENCIA: main.py no encontrado"
+          fi
 
       - name: Configurar Keystore (Firma)
         id: sign_config
@@ -84,17 +109,24 @@ jobs:
 
       - name: Compilar APK (Release)
         env:
-          # Si usamos la key temporal (USE_CUSTOM_KEY=0), usamos las credenciales dummy
           P4A_RELEASE_KEYSTORE: release.keystore
           P4A_RELEASE_KEYSTORE_PASSWD: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEYSTORE_PASSWORD || 'password123' }}
           P4A_RELEASE_KEYALIAS: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEY_ALIAS || 'myalias' }}
           P4A_RELEASE_KEYALIAS_PASSWD: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEY_PASSWORD || 'password123' }}
         run: |
-          # "yes" acepta automáticamente las licencias del SDK de Android
-          yes | buildozer android release
+          # Aceptar licencias de Android SDK y compilar
+          yes | buildozer -v android release
+
+      - name: Verificar APK generado
+        run: |
+          echo "Contenido del directorio bin/:"
+          ls -la bin/ || echo "Directorio bin/ no existe"
+          echo "Buscando archivos APK..."
+          find . -name "*.apk" -type f
 
       - name: Subir Artefacto (APK)
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: bin/*.apk
+          if-no-files-found: error
