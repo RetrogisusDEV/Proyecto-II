@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = App Nodos
+title = Starnet App
 
 # (str) Package name
-package.name = appnodos
+package.name = starnetapp
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.nodos
+package.domain = org.starnet
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -21,6 +21,15 @@ source.exclude_exts = spec
 # (list) List of inclusions using pattern matching
 # Importante: Incluir la carpeta src donde está tu HTML
 source.include_patterns = src/*,src/css/*,src/js/*
+
+# (str) Application version
+version = 1.0.0
+
+# (int) Application version code (for Android)
+version.code = 1
+
+# (str) Application version
+# version = 1.0.0
 
 # (list) Application requirements
 # pywebview requiere python3, kivy y android como base
