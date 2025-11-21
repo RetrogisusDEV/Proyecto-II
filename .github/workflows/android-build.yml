@@ -59,26 +59,24 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Verificar archivos en el directorio
+      - name: Verificar y corregir buildozer.spec
         run: |
-          pwd
-          ls -la
-          echo "Verificando buildozer.spec:"
-          if [ -f "buildozer.spec" ]; then
-            echo "✓ buildozer.spec encontrado"
-          else
-            echo "✗ buildozer.spec NO encontrado"
-            exit 1
+          # Verificar si existe la versión
+          if ! grep -q "^version\s*=" buildozer.spec; then
+            echo "Agregando versión al buildozer.spec..."
+            # Agregar versión después del título
+            sed -i '/^title\s*=.*/a version = 1.0.0' buildozer.spec
           fi
-
-      - name: Inicializar Buildozer (si es necesario)
-        run: |
-          if [ ! -f ".buildozer" ]; then
-            echo "Inicializando Buildozer..."
-            buildozer init
-          else
-            echo "Buildozer ya está inicializado"
+          
+          # Verificar si existe version.code
+          if ! grep -q "^version.code\s*=" buildozer.spec; then
+            echo "Agregando version.code al buildozer.spec..."
+            # Agregar version.code después de version
+            sed -i '/^version\s*=.*/a version.code = 1' buildozer.spec
           fi
+          
+          echo "buildozer.spec verificado y corregido:"
+          grep -E "^(version|version.code)" buildozer.spec
 
       - name: Desactivar modo Debug en Python
         run: |
