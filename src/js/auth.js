@@ -155,8 +155,13 @@ class AuthSystem {
         pendingUsers.push(userData);
         StorageManager.savePendingUsers(pendingUsers);
 
-        // Llamar a función para subir a Firebase
-        this.uploadToFirebase(userData);
+        // Intentar subir a Firebase (si está disponible)
+        try {
+            const ok = FirebaseManager.uploadUserData(userData);
+            if (!ok) console.warn('AuthSystem: Firebase upload returned false, user left in pending list');
+        } catch (err) {
+            console.error('AuthSystem: error uploading to Firebase', err);
+        }
 
         this.showMessage('Registro correcto. Ya puedes iniciar sesión.', 'success');
         document.getElementById('register-form').reset();
@@ -166,7 +171,7 @@ class AuthSystem {
         }, 2000);
     }
 
-    static loginUser(e) {
+    static async loginUser(e) {
         e.preventDefault();
         if (this.updateLockState()) return;
 
@@ -178,9 +183,24 @@ class AuthSystem {
             return;
         }
 
-        const users = StorageManager.getUsers();
-        const user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
-        
+        let users = StorageManager.getUsers();
+        let user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
+
+        // If not found locally, try Firebase
+        if (!user) {
+            try {
+                const remote = await FirebaseManager.getUserByNameOrEmployeeId(name);
+                if (remote && remote.password === password) {
+                    user = remote;
+                    // Save locally for offline
+                    users.push(user);
+                    StorageManager.saveUsers(users);
+                }
+            } catch (err) {
+                console.error('AuthSystem: Firebase lookup failed', err);
+            }
+        }
+
         if (!user) {
             let attempts = StorageManager.getLoginAttempts();
             attempts.count = (attempts.count || 0) + 1;
@@ -254,8 +274,17 @@ class AuthSystem {
     }
 
     static uploadToFirebase(userData) {
-        // Función para subir a Firebase (se implementará más adelante)
-        console.log('Función para subir a Firebase:', userData);
+        try {
+            if (typeof FirebaseManager !== 'undefined') {
+                return FirebaseManager.uploadUserData(userData);
+            } else {
+                console.warn('AuthSystem: FirebaseManager no disponible');
+                return false;
+            }
+        } catch (err) {
+            console.error('AuthSystem: uploadToFirebase error', err);
+            return false;
+        }
     }
 
     static checkAuth() {

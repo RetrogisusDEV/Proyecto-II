@@ -1,48 +1,46 @@
 <!-- Header estilo YouTube -->
-<header class="bg-white shadow-sm sticky top-0 z-50">
+<header class="bg-red-600 shadow-sm sticky top-0 z-50 text-white">
   <div class="flex items-center justify-between px-4 py-2">
     <!-- Menú hamburguesa y logo -->
     <div class="flex items-center">
-      <button id="mobile-menu-toggle" class="p-2 mr-2 rounded-full hover:bg-gray-100 md:hidden">
+      <button id="mobile-menu-toggle" class="p-2 mr-2 rounded-full hover:bg-red-500 md:hidden text-white">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
+      <!-- Logo -->
       <div class="flex items-center">
-        <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center mr-2">
-          <span class="text-white font-bold text-xs">SN</span>
-        </div>
-        <h1 class="text-xl font-bold text-gray-900">StarNet</h1>
+        <img src="images/logo.png" alt="StarNet logo" class="h-8 mr-2" />
       </div>
     </div>
 
     <!-- Información del usuario -->
-    <div id="user-info" class="hidden md:flex items-center space-x-4">
+      <div id="user-info" class="hidden md:flex items-center space-x-4">
       <div class="text-right">
-        <div class="text-sm font-medium text-gray-900" id="user-name">Usuario</div>
-        <div class="text-xs text-gray-500" id="employee-id">ID: --</div>
+        <div class="text-sm font-medium" id="user-name">Usuario</div>
+        <div class="text-xs opacity-75" id="employee-id">ID: --</div>
       </div>
-      <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-        <span class="text-white font-bold text-xs" id="user-initials">U</span>
+      <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+        <span class="text-red-600 font-bold text-xs" id="user-initials">U</span>
       </div>
     </div>
 
     <!-- Botones de navegación -->
     <div class="flex items-center space-x-1">
-      <button id="btnReportes" class="flex items-center px-4 py-2 rounded-lg bg-red-600 text-white font-medium">
+      <button id="btnReportes" class="flex items-center px-4 py-2 rounded-lg bg-white text-red-600 font-medium hover:bg-gray-100">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
         </svg>
         <span>Reportes</span>
       </button>
-      <button id="btnNodos" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+      <button id="btnNodos" class="flex items-center px-4 py-2 rounded-lg bg-white text-red-600 font-medium hover:bg-gray-100">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
         </svg>
         <span>Nodos</span>
       </button>
-      <button id="mobile-info-toggle" class="p-2 rounded-full hover:bg-gray-100 md:hidden">
+      <button id="mobile-info-toggle" class="p-2 rounded-full hover:bg-red-500 md:hidden text-white">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>

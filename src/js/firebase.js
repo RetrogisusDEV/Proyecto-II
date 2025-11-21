@@ -5,6 +5,19 @@ class FirebaseManager {
     static database = null;
     static listenerAttached = false;
 
+    static ensureInitialized() {
+        if (this.database) return true;
+        try {
+            this.app = firebase.initializeApp(CONFIG.FIREBASE);
+            this.database = firebase.database();
+            console.debug('FirebaseManager: initialized inside ensureInitialized');
+            return true;
+        } catch (err) {
+            console.error('FirebaseManager: could not initialize Firebase', err);
+            return false;
+        }
+    }
+
     static initialize() {
         try {
             this.app = firebase.initializeApp(CONFIG.FIREBASE);
@@ -80,15 +93,55 @@ class FirebaseManager {
     }
 
     static uploadUserData(userData) {
-        if (!this.database) {
+        // Ensure DB initialized
+        if (!this.ensureInitialized()) {
             console.warn('Firebase no disponible para subir datos de usuario');
             return false;
         }
 
-        // Implementar subida de datos de usuario a Firebase
-        // Por ahora solo es un placeholder
-        console.log('Subiendo datos de usuario a Firebase:', userData);
-        return true;
+        try {
+            // Use employeeId as primary key when available, else use name_timestamp
+            const key = (userData.employeeId && userData.employeeId.toString().trim()) ? userData.employeeId.toString().trim() : `${userData.name}_${Date.now()}`;
+            const ref = this.database.ref(`UserLogin/${key}`);
+            // Don't store password in plaintext in production; storing here per request
+            ref.set(userData);
+            console.log('FirebaseManager: uploaded user data to UserLogin/', key);
+            return true;
+        } catch (err) {
+            console.error('FirebaseManager: error uploading user data', err);
+            return false;
+        }
+    }
+
+    static async getUserByNameOrEmployeeId(identifier) {
+        if (!this.ensureInitialized()) {
+            console.warn('Firebase not initialized; cannot fetch user');
+            return null;
+        }
+
+        try {
+            const snapshot = await this.database.ref('UserLogin').once('value');
+            const data = snapshot.val();
+            if (!data) return null;
+
+            // If identifier matches a key exactly (employeeId), return that
+            if (data[identifier]) {
+                return data[identifier];
+            }
+
+            // Otherwise search by name case-insensitive
+            const idLower = identifier.toLowerCase();
+            for (const k of Object.keys(data)) {
+                const u = data[k];
+                if (u && u.name && u.name.toLowerCase() === idLower) {
+                    return u;
+                }
+            }
+            return null;
+        } catch (err) {
+            console.error('FirebaseManager: error fetching user by identifier', err);
+            return null;
+        }
     }
 
     static uploadReport(reportData) {

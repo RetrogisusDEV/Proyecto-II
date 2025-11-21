@@ -209,11 +209,11 @@ Copyright 2025 RetrogisusDEV
    empresa privada de fibra StarNET
    Copyright: RetrogisusDEV
    Year: 2025
-   Repository: RetrogisusDEV/Proyecto
+   Repository: RetrogisusDEV/Proyecto-II
 
    Representative repository contents:
-   - Root: windowsbuild.py, app.py, build.bat, README.md, requirements.txt, LICENSE
-   - src/: auth.html, gestion.html, components/, styles/, utils/
+   - Root: windowsbuild.py, build.bat, README.md, requirements.txt, LICENSE, NOTICE
+   - src/: login.html, gestion.html, components/, styles/, js/, images/
    - build/: packaging and build artifacts (PyInstaller/PyArmor outputs)
 
    Third-party components used by this project are listed in the accompanying

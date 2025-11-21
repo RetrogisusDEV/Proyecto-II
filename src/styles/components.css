@@ -29,7 +29,8 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 40;
+  /* Keep overlay under sidebars (which use z-40). Use a slightly lower z-index. */
+  z-index: 30;
 }
 
 .overlay.active {
