@@ -1,0 +1,100 @@
+name: Build Android Release
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Liberar espacio en disco
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip \
+            build-essential \
+            git \
+            python3 \
+            python3-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev \
+            libgstreamer1.0 \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            libffi-dev \
+            libssl-dev \
+            automake \
+            autoconf \
+            libtool
+
+      - name: Preparar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Buildozer y Cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython
+
+      - name: Desactivar modo Debug en Python
+        # Esto busca "debug=True" en main.py y lo cambia a "debug=False"
+        run: |
+          sed -i 's/debug=True/debug=False/g' main.py
+          echo "Modo debug desactivado en main.py"
+
+      - name: Configurar Keystore (Firma)
+        id: sign_config
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Secretos detectados. Decodificando keystore..."
+            echo $KEYSTORE_BASE64 | base64 --decode > release.keystore
+            echo "USE_CUSTOM_KEY=1" >> $GITHUB_ENV
+          else
+            echo "ADVERTENCIA: No se detectaron secretos. Generando keystore temporal..."
+            keytool -genkey -v -keystore release.keystore -alias myalias -keyalg RSA -keysize 2048 -validity 10000 -storepass password123 -keypass password123 -dname "CN=Android App,O=Self,C=US"
+            echo "USE_CUSTOM_KEY=0" >> $GITHUB_ENV
+          fi
+
+      - name: Compilar APK (Release)
+        env:
+          # Si usamos la key temporal (USE_CUSTOM_KEY=0), usamos las credenciales dummy
+          P4A_RELEASE_KEYSTORE: release.keystore
+          P4A_RELEASE_KEYSTORE_PASSWD: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEYSTORE_PASSWORD || 'password123' }}
+          P4A_RELEASE_KEYALIAS: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEY_ALIAS || 'myalias' }}
+          P4A_RELEASE_KEYALIAS_PASSWD: ${{ env.USE_CUSTOM_KEY == '1' && secrets.ANDROID_KEY_PASSWORD || 'password123' }}
+        run: |
+          # "yes" acepta automáticamente las licencias del SDK de Android
+          yes | buildozer android release
+
+      - name: Subir Artefacto (APK)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: bin/*.apk
