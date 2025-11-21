@@ -41,10 +41,19 @@ jobs:
           pyarmor gen -O obf windowsbuild.py
 
       - name: Package with PyInstaller (using obfuscated source)
+        shell: pwsh
         run: |
-          echo "Packaging with PyInstaller (onefile)"
-          # Include the entire src/ directory and db.json so the packaged app has static resources
-          pyinstaller --onefile --name windowsbuild --distpath build/dist --workpath build/build --specpath build --add-data "src;src" --add-data "db.json;." obf/windowsbuild.py
+          Write-Host "Packaging with PyInstaller (onefile)"
+          $cwd = (Get-Location).Path
+          Write-Host "Workspace path: $cwd"
+          $srcAbs = Join-Path $cwd 'src'
+          $dbAbs = Join-Path $cwd 'db.json'
+          if (-not (Test-Path $srcAbs)) { Write-Error "Source folder not found: $srcAbs"; exit 1 }
+          if (-not (Test-Path $dbAbs)) { Write-Warning "db.json not found at $dbAbs, continuing without it" }
+          # Use absolute paths for --add-data so the spec file (written to build/) does not turn them into build\src
+          $addSrc = "${srcAbs};src"
+          $addDb = "${dbAbs};."
+          pyinstaller --onefile --name windowsbuild --distpath build/dist --workpath build/build --specpath build --add-data $addSrc --add-data $addDb obf/windowsbuild.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
